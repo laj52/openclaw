@@ -43,6 +43,22 @@ export function modelSelectionRequiresCodexRuntime(params: {
   return openAIRouteRequiresCodexRuntime({ provider, config: params.config });
 }
 
+export function modelSelectionUsesImplicitCodexHarness(params: {
+  model?: string;
+  config?: OpenClawConfig;
+}): boolean {
+  const model = params.model?.trim();
+  if (!model) {
+    return false;
+  }
+  const slashIndex = model.indexOf("/");
+  if (slashIndex <= 0) {
+    return false;
+  }
+  const provider = normalizeProviderId(model.slice(0, slashIndex));
+  return provider === OPENAI_PROVIDER_ID && !openAIProviderUsesCustomBaseUrl(params.config);
+}
+
 export function modelSelectionShouldEnsureCodexPlugin(params: {
   model?: string;
   config?: OpenClawConfig;
@@ -59,7 +75,7 @@ export function modelSelectionShouldEnsureCodexPlugin(params: {
   if (provider === OPENAI_CODEX_PROVIDER_ID) {
     return true;
   }
-  return provider === OPENAI_PROVIDER_ID && !openAIProviderUsesCustomBaseUrl(params.config);
+  return modelSelectionUsesImplicitCodexHarness(params);
 }
 
 export function hasOpenAICodexAuthProfileOverride(value: unknown): boolean {

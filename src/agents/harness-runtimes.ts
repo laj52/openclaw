@@ -3,7 +3,7 @@ import { normalizeOptionalLowercaseString } from "../shared/string-coerce.js";
 import { isRecord } from "../utils.js";
 import { resolveAgentRuntimePolicy } from "./agent-runtime-policy.js";
 import { isCliRuntimeAlias } from "./model-runtime-aliases.js";
-import { modelSelectionRequiresCodexRuntime } from "./openai-codex-routing.js";
+import { modelSelectionUsesImplicitCodexHarness } from "./openai-codex-routing.js";
 import { normalizeEmbeddedAgentRuntime } from "./pi-embedded-runner/runtime.js";
 
 function normalizeRuntimeId(value: unknown): string | undefined {
@@ -40,7 +40,7 @@ function listAgentModelRefs(value: unknown): string[] {
 
 function hasCodexRuntimeModelRef(config: OpenClawConfig, value: unknown): boolean {
   return listAgentModelRefs(value).some((ref) => {
-    return modelSelectionRequiresCodexRuntime({ model: ref, config });
+    return modelSelectionUsesImplicitCodexHarness({ model: ref, config });
   });
 }
 
